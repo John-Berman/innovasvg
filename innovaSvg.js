@@ -1,3 +1,5 @@
+//Code taken from GitHub
+//https://github.com/John-Berman/innovasvg/blob/master/innovaSvg.js
 const XMLNS = "http://www.w3.org/2000/svg";
 const XLINK = "http://www.w3.org/1999/xlink";
 
@@ -88,7 +90,7 @@ function createNode(parentNode, id, type, args, innerHtml, namespace) {
     return node;
 }
 function drawCircle(x,y,r,id,fill,stroke,fo,node,so){
-	createNode(node || CANVAS, 
+	return createNode(node || CANVAS, 
 			id || guid(), 
 			'circle', 
 			{ cx: x, cy: y, r:r||1, id: id || guid(), style: 'fill:' + (fill || 'none') + ';stroke:' + (stroke || 'black') + ';stroke-width:0.5px;fill-opacity:' + (fo||1) +';' + 'stroke-opacity:' + (so || 1) +';'}
@@ -97,7 +99,7 @@ function drawCircle(x,y,r,id,fill,stroke,fo,node,so){
 function drawRectangle(node,x,y,width,height,params){
 	var d = 'M ' + x + ' ' + y + ' l ' + width + ' ' + 0 + ' l ' + 0 + ' ' + height + ' l ' + (-width) + ' ' + 0 + ' z';
 	params.d = d;
-	drawPath(node,params)
+	return drawPath(node,params)
 }
 function drawPath(node, params) {
     /// <summary>
@@ -138,17 +140,35 @@ function measureText(node, text, args, mw) {
     //console.log(bb);
 	return c;	
 }
-function textElement(node, text, args) {
+function textElement(node, text, args, lines) {
     var t = document.createElementNS(XMLNS, "text"),
         elem = document.getElementById(node);
     for (o in args) {
         if (args[o] !== undefined) t.setAttributeNS(null, o, args[o]);
     }
-    t.textContent = text;
+    if(lines === undefined){
+        t.textContent = text;
+    } else {
+        lines.forEach(line => {
+            let ts = document.createElementNS(XMLNS, "tspan");
+            ts.textContent = line;
+            ts.setAttributeNS(null, 'x',args.x);
+            ts.setAttributeNS(null, 'dy',15);
+            t.appendChild(ts);
+        });
+    }
 
     elem.appendChild(t);
     return { parent: elem, node: t };
 }
 function vectorLength(x,y){
     return Math.sqrt((Math.pow(x,2)+(Math.pow(y,2))));
+}
+//New
+function drawEllipse(cx,cy,rx, ry,id,fill,stroke,fo,node,so){
+	return createNode(node || CANVAS, 
+			id || guid(), 
+			'ellipse', 
+			{ cx: cx, cy: cy, rx:rx, ry: ry, id: id || guid(), style: 'fill:' + (fill || 'none') + ';stroke:' + (stroke || 'black') + ';stroke-width:0.5px;fill-opacity:' + (fo||1) +';' + 'stroke-opacity:' + (so || 1) +';'}
+	);
 }
